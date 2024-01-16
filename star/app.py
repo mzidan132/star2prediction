@@ -40,6 +40,41 @@ def predict():
         result = "Sorry, we could not determine the star."
     return render_template('index.html',result = result)
 
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.impute import SimpleImputer
+auto_mpg = pd.read_csv('auto-mpg.csv', na_values='?')
+print(auto_mpg.shape)
+# Impute missing values using the median
+
+
+# Check unique values for the 'horsepower' attribute
+print("Unique values for 'horsepower':")
+print(auto_mpg['horsepower'].unique())
+
+
+from sklearn.preprocessing import LabelEncoder
+
+# Instantiate the LabelEncoder
+label_encoder = LabelEncoder()
+
+# Fit and transform the 'car name' column
+auto_mpg['car name'] = label_encoder.fit_transform(auto_mpg['car name'])
+
+imputer = SimpleImputer(strategy='median')
+mpg = pd.DataFrame(imputer.fit_transform(auto_mpg), columns=auto_mpg.columns)
+
+# Split the dataset into 75% train and 25% test
+X = mpg.drop(['mpg'], axis=1)
+y = mpg['mpg']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+
+# DecisionTreeRegressor
+dt = DecisionTreeRegressor(max_depth=8, min_samples_leaf=0.13)
+
+# Fit dt with train data
+dt.fit(X_train, y_train)
 
 
 
